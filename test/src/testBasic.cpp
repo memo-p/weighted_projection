@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <iostream>
 #include <vector>
+
 #include "basic/projection.hpp"
 #include "catch.hpp"
 
@@ -30,5 +31,33 @@ TEST_CASE("test projection 1") {
     proj::ProjBF(y.memptr(), x.memptr(), l, a);
     r = arma::sum(x);
     REQUIRE(abs(r - a) < epsilon);
+  }
+}
+
+TEST_CASE("test projection in-place") {
+  int l = 10000;
+  double a = 1;
+  double epsilon = 1e-7;
+  double r;
+  size_t rep = 100;
+  for (size_t i = 0; i < rep; i++) {
+    {
+      arma::vec y = arma::abs(arma::randn<arma::vec>(l));
+      proj::ProjC(y.memptr(), y.memptr(), l, a);
+      r = arma::sum(y);
+      REQUIRE(abs(r - a) < epsilon);
+    }
+    {
+      arma::vec y = arma::abs(arma::randn<arma::vec>(l));
+      proj::ProjB(y.memptr(), y.memptr(), l, a);
+      r = arma::sum(y);
+      REQUIRE(abs(r - a) < epsilon);
+    }
+    {
+      arma::vec y = arma::abs(arma::randn<arma::vec>(l));
+      proj::ProjBF(y.memptr(), y.memptr(), l, a);
+      r = arma::sum(y);
+      REQUIRE(abs(r - a) < epsilon);
+    }
   }
 }

@@ -21,20 +21,22 @@
 #include <cfloat>  // for DBL_MAX
 #include <cstdio>
 #include <iostream>
+
 #include "DTB.hpp"
 
 namespace proj {
 
 void ProjWB(double* y, double* w, double* x, const int length, const double a) {
   union DtB* r1 = new union DtB[length];  // malloc(sizeof(union DtB) * length);
-  union DtB* r1ptr = r1;
-  union DtB* r2 = (union DtB*)x;
+  union DtB* r1_ptr = r1;
+  union DtB* r2 = ((y == x) ? (new DtB[length]) : (union DtB*)x);
+  union DtB* r2_ptr = r2;
   union DtB* tmpswap;
   double *ptrwr1, *ptrwr2, *ptry1, *ptry2;
-  double* wr1 = ptrwr1 = (double*)malloc(length * sizeof(double));
-  double* wr2 = ptrwr2 = (double*)malloc(length * sizeof(double));
-  double* y1 = ptry1 = (double*)malloc(length * sizeof(double));
-  double* y2 = ptry2 = (double*)malloc(length * sizeof(double));
+  double* wr1 = ptrwr1 = new double[length];
+  double* wr2 = ptrwr2 = new double[length];
+  double* y1 = ptry1 = new double[length];
+  double* y2 = ptry2 = new double[length];
   double* wrswap = wr1;
   int illength;
   double tau;
@@ -161,11 +163,12 @@ void ProjWB(double* y, double* w, double* x, const int length, const double a) {
 
   for (i = 0; i < length; i++)
     x[i] = (y[i] > w[i] * tau) ? y[i] - w[i] * tau : 0.0;
-  free(r1ptr);
-  free(ptry2);
-  free(ptry1);
-  free(ptrwr1);
-  free(ptrwr2);
+  delete[] r1_ptr;
+  if (y == x) delete[] r2_ptr;
+  delete[] ptry2;
+  delete[] ptry1;
+  delete[] ptrwr1;
+  delete[] ptrwr2;
 }
 
 }  // namespace proj

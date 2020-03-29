@@ -7,8 +7,9 @@ namespace proj {
 
 void ProjB(const datatype* y, datatype* x, const int length, const double a) {
   union DtB* r1 = new DtB[length];
-  union DtB* r1ptr = r1;
-  union DtB* r2 = (union DtB*)x;
+  union DtB* r1_ptr = r1;
+  union DtB* r2 = ((y == x) ? (new DtB[length]) : (union DtB*)x);
+  union DtB* r2_ptr = r2;
   int illength;
   double tau;
   int currentLength;
@@ -105,7 +106,8 @@ void ProjB(const datatype* y, datatype* x, const int length, const double a) {
   }
   tau /= count;
   for (i = 0; i < length; i++) x[i] = (y[i] > tau ? y[i] - tau : 0.0);
-  delete[] r1ptr;
+  delete[] r1_ptr;
+  if (y == x) delete[] r2_ptr; 
 }
 
 }  // namespace proj
