@@ -11,26 +11,30 @@
 #include "catch.hpp"
 
 TEST_CASE("test projection 1") {
-  int l = 100000;
-  double a = 1;
+  std::vector<int> dims = {100, 1000, 100000};
+  std::vector<int> as = {1,  8, 16, 32};
   double epsilon = 1e-7;
   double r;
-  size_t rep = 100;
-  for (size_t i = 0; i < rep; i++) {
-    arma::vec y = arma::abs(arma::randn<arma::vec>(l));
-    arma::vec x = arma::zeros<arma::vec>(l);
+  size_t rep = 10;
+  for (auto &&l : dims) {
+    for (auto &&a : as) {
+      for (size_t i = 0; i < rep; i++) {
+        arma::vec y = arma::abs(arma::randn<arma::vec>(l));
+        arma::vec x = arma::zeros<arma::vec>(l);
 
-    proj::ProjC(y.memptr(), x.memptr(), l, a);
-    r = arma::sum(x);
-    REQUIRE(abs(r - a) < epsilon);
+        proj::ProjC(y.memptr(), x.memptr(), l, a);
+        r = arma::sum(x);
+        REQUIRE(abs(r - a) < epsilon);
 
-    proj::ProjB(y.memptr(), x.memptr(), l, a);
-    r = arma::sum(x);
-    REQUIRE(abs(r - a) < epsilon);
+        proj::ProjB(y.memptr(), x.memptr(), l, a);
+        r = arma::sum(x);
+        REQUIRE(abs(r - a) < epsilon);
 
-    proj::ProjBF(y.memptr(), x.memptr(), l, a);
-    r = arma::sum(x);
-    REQUIRE(abs(r - a) < epsilon);
+        proj::ProjBF(y.memptr(), x.memptr(), l, a);
+        r = arma::sum(x);
+        REQUIRE(abs(r - a) < epsilon);
+      }
+    }
   }
 }
 
